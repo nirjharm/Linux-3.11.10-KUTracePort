@@ -74,9 +74,6 @@
 #include <linux/binfmts.h>
 #include <linux/context_tracking.h>
 
-/*Nirjhar Mukherjee 26 Oct 2019 */
-#include <linux/kutrace.h>
-
 #include <asm/switch_to.h>
 #include <asm/tlb.h>
 #include <asm/irq_regs.h>
@@ -1433,9 +1430,6 @@ void scheduler_ipi(void)
 	 * somewhat pessimize the simple resched case.
 	 */
 	irq_enter();
-			
-	/*Nirjhar Mukherjee 26 Oct 2019 - Contd. from smp.c */
-
 	tick_nohz_full_check();
 	sched_ttwu_pending();
 
@@ -1446,10 +1440,6 @@ void scheduler_ipi(void)
 		this_rq()->idle_balance = 1;
 		raise_softirq_irqoff(SCHED_SOFTIRQ);
 	}
-			
-	/*Nirjhar Mukherjee 26 Oct 2019 */
-	kutrace1(KUTRACE_IRQRET + RESCHEDULE_VECTOR, 0);
-
 	irq_exit();
 }
 
@@ -1513,9 +1503,6 @@ try_to_wake_up(struct task_struct *p, unsigned int state, int wake_flags)
 	raw_spin_lock_irqsave(&p->pi_lock, flags);
 	if (!(p->state & state))
 		goto out;
-
-	/*Nirjhar Mukherjee 26 Oct 2019 */
-	kutrace1(KUTRACE_RUNNABLE, p->pid);
 
 	success = 1; /* we're going to change ->state */
 	cpu = task_cpu(p);
@@ -1583,9 +1570,6 @@ static void try_to_wake_up_local(struct task_struct *p)
 
 	if (!(p->state & TASK_NORMAL))
 		goto out;
-
-	/*Nirjhar Mukherjee 26 Oct 2019 */
-	kutrace1(KUTRACE_RUNNABLE, p->pid);
 
 	if (!p->on_rq)
 		ttwu_activate(rq, p, ENQUEUE_WAKEUP);
@@ -2409,9 +2393,6 @@ static void __sched __schedule(void)
 	struct rq *rq;
 	int cpu;
 
-	/*Nirjhar Mukherjee 26 Oct 2019 */
-	kutrace1(KUTRACE_SYSCALL64 + KUTRACE_SCHEDSYSCALL, 0);
-
 need_resched:
 	preempt_disable();
 	cpu = smp_processor_id();
@@ -2471,11 +2452,6 @@ need_resched:
 		rq->curr = next;
 		++*switch_count;
 
-		/*Nirjhar Mukherjee 26 Oct 2019 */
-		/*Put PID name into trace first time*/
-		kutrace_pidname(next);
-		kutrace1(KUTRACE_USERPID, next->pid);
-
 		context_switch(rq, prev, next); /* unlocks the rq */
 		/*
 		 * The context switch have flipped the stack from under us
@@ -2493,9 +2469,6 @@ need_resched:
 	sched_preempt_enable_no_resched();
 	if (need_resched())
 		goto need_resched;
-	
-	/*Nirjhar Mukherjee 26 Oct 2019 */
-	kutrace1(KUTRACE_SYSRET64 + KUTRACE_SCHEDSYSCALL. 0);
 }
 
 static inline void sched_submit_work(struct task_struct *tsk)

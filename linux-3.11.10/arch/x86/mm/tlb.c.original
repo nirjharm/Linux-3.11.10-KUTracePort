@@ -7,9 +7,6 @@
 #include <linux/module.h>
 #include <linux/cpu.h>
 
-/*Nirjhar Mukherjee 26 Oct 2019 */	
-#include <linux/kutrace.h>
-
 #include <asm/tlbflush.h>
 #include <asm/mmu_context.h>
 #include <asm/cache.h>

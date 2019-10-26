@@ -28,10 +28,6 @@
 #include <linux/cpu.h>
 #include <linux/clockchips.h>
 #include <linux/slab.h>
-
-/*Nirjhar Mukherjee 26 Oct 2019 */	
-#include <linux/kutrace.h>
-
 #include <acpi/acpi_bus.h>
 #include <acpi/acpi_drivers.h>
 #include <asm/mwait.h>
@@ -200,12 +196,7 @@ static int power_saving_thread(void *data)
 			__monitor((void *)&current_thread_info()->flags, 0, 0);
 			smp_mb();
 			if (!need_resched())
-			{
-				/*Nirjhar Mukherjee 26 Oct 2019 */
-				kutrace1(KUTRACE_MWAIT, power_saving_mwait_eax);
-
 				__mwait(power_saving_mwait_eax, 1);
-			}
 
 			start_critical_timings();
 			if (lapic_marked_unstable)

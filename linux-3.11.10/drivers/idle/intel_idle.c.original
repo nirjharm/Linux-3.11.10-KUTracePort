@@ -61,10 +61,6 @@
 #include <linux/notifier.h>
 #include <linux/cpu.h>
 #include <linux/module.h>
-
-/*Nirjhar Mukherjee 26 Oct 2019 */	
-#include <linux/kutrace.h>
-
 #include <asm/cpu_device_id.h>
 #include <asm/mwait.h>
 #include <asm/msr.h>
@@ -368,12 +364,7 @@ static int intel_idle(struct cpuidle_device *dev,
 		__monitor((void *)&current_thread_info()->flags, 0, 0);
 		smp_mb();
 		if (!need_resched())
-		{
-			/*Nirjhar Mukherjee 26 Oct 2019 */	
-			kutrace1(KUTRACE_MWAIT, eax);
-
 			__mwait(eax, ecx);
-		}
 	}
 
 	if (!(lapic_timer_reliable_states & (1 << (cstate))))

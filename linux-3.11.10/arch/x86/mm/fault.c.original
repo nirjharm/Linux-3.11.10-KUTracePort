@@ -15,9 +15,6 @@
 #include <linux/prefetch.h>		/* prefetchw			*/
 #include <linux/context_tracking.h>	/* exception_enter(), ...	*/
 
-/*Nirjhar Mukherjee 26 Oct 2019 */	
-#include <linux/kutrace.h>
-
 #include <asm/traps.h>			/* dotraplinkage, ...		*/
 #include <asm/pgalloc.h>		/* pgd_*(), ...			*/
 #include <asm/kmemcheck.h>		/* kmemcheck_*(), ...		*/
@@ -1230,14 +1227,6 @@ do_page_fault(struct pt_regs *regs, unsigned long error_code)
 	enum ctx_state prev_state;
 
 	prev_state = exception_enter();
-
-	/*Nirjhar Mukherjee 26 Oct 2019 */	
-	kutrace1(KUTRACE_TRAP + KUTRACE_PAGEFAULT, 0);
-
 	__do_page_fault(regs, error_code);
-
-	/*Nirjhar Mukherjee 26 Oct 2019 */	
-	kutrace1(KUTRACE_TRAPRET + KUTRACE_PAGEFAULT, 0);
-
 	exception_exit(prev_state);
 }

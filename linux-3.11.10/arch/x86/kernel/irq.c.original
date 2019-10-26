@@ -11,9 +11,6 @@
 #include <linux/delay.h>
 #include <linux/export.h>
 
-/*Nirjhar Mukherjee 26 Oct 2019 */		
-#include <linux/kutrace.h>
-
 #include <asm/apic.h>
 #include <asm/io_apic.h>
 #include <asm/irq.h>
@@ -190,8 +187,6 @@ unsigned int __irq_entry do_IRQ(struct pt_regs *regs)
 
 	irq_enter();
 	
-	/*Nirjhar Mukherjee 26 Oct 2019 */	
-	kutrace1(KUTRACE_IRQ + (vector & 0xFF), 0);	
 
 	exit_idle();
 
@@ -205,10 +200,6 @@ unsigned int __irq_entry do_IRQ(struct pt_regs *regs)
 				__func__, smp_processor_id(), vector, irq);
 	}
 
-
-
-	/*Nirjhar Mukherjee 26 Oct 2019 */		
-	kutrace1(KUTRACE_IRQRET + (vector & 0xFF), 0);	
 
 	irq_exit();
 
@@ -233,13 +224,7 @@ void smp_x86_platform_ipi(struct pt_regs *regs)
 
 	entering_ack_irq();
 
-	/*Nirjhar Mukherjee 26 Oct 2019 */		
-	kutrace1(KUTRACE_IRQ + X86_PLATFORM_IPI_VECTOR, 0);
-
 	__smp_x86_platform_ipi();
-
-	/*Nirjhar Mukherjee 26 Oct 2019 */		
-	kutrace1(KUTRACE_IRQRET + X86_PLATFORM_IPI_VECTOR, 0);
 
 	exiting_irq();
 	set_irq_regs(old_regs);
@@ -272,19 +257,9 @@ void smp_trace_x86_platform_ipi(struct pt_regs *regs)
 	struct pt_regs *old_regs = set_irq_regs(regs);
 
 	entering_ack_irq();
-
-	/*Nirjhar Mukherjee 26 Oct 2019 */		
-	kutrace1(KUTRACE_IRQ + X86_PLATFORM_IPI_VECTOR, 0);
-
-
 	trace_x86_platform_ipi_entry(X86_PLATFORM_IPI_VECTOR);
 	__smp_x86_platform_ipi();
 	trace_x86_platform_ipi_exit(X86_PLATFORM_IPI_VECTOR);
-
-	/*Nirjhar Mukherjee 26 Oct 2019 */		
-	kutrace1(KUTRACE_IRQRET + X86_PLATFORM_IPI_VECTOR, 0);
-
-
 	exiting_irq();
 	set_irq_regs(old_regs);
 }

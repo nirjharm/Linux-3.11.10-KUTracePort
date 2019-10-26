@@ -125,10 +125,6 @@ targets += config_data.h
 $(obj)/config_data.h: $(obj)/config_data.gz FORCE
 	$(call filechk,ikconfiggz)
 
-
-#Nirjhar Mukherjee 26 Oct 2019
-obj-y += kutrace/
-
 $(obj)/time.o: $(obj)/timeconst.h
 
 quiet_cmd_hzfile = HZFILE  $@

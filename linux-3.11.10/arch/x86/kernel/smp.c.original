@@ -24,9 +24,6 @@
 #include <linux/cpu.h>
 #include <linux/gfp.h>
 
-/*Nirjhar Mukherjee 26 Oct 2019 */
-#include <iostream.h>
-
 #include <asm/mtrr.h>
 #include <asm/tlbflush.h>
 #include <asm/mmu_context.h>
@@ -127,27 +124,17 @@ static void native_smp_send_reschedule(int cpu)
 		WARN_ON(1);
 		return;
 	}
-	/*Nirjhar Mukherjee 26 Oct 2019 */
-	kutrace1(KUTRACE_IPI, cpu);
-
 	apic->send_IPI_mask(cpumask_of(cpu), RESCHEDULE_VECTOR);
 }
 
 void native_send_call_func_single_ipi(int cpu)
 {
-	/*Nirjhar Mukherjee 26 Oct 2019 */
-	kutrace1(KUTRACE_IPI, cpu);
-
 	apic->send_IPI_mask(cpumask_of(cpu), CALL_FUNCTION_SINGLE_VECTOR);
 }
 
 void native_send_call_func_ipi(const struct cpumask *mask)
 {
 	cpumask_var_t allbutself;
-
-	/*Nirjhar Mukherjee 26 Oct 2019 */
-	/*Use CPU 0 as a placeholder to indicate when mask was sent*/
-	kutrace1(KUTRACE_IPI, 0);
 
 	if (!alloc_cpumask_var(&allbutself, GFP_ATOMIC)) {
 		apic->send_IPI_mask(mask, CALL_FUNCTION_VECTOR);
@@ -272,15 +259,7 @@ static inline void __smp_reschedule_interrupt(void)
 void smp_reschedule_interrupt(struct pt_regs *regs)
 {
 	ack_APIC_irq();
-	
-	/*Nirjhar Mukherjee 26 Oct 2019 */
-	kutrace1(KUTRACE_IRQ + RESCHEDULE_VECTOR, 0);
-
 	__smp_reschedule_interrupt();
-
-	
-	/* Nirjhar Mukherjee 26 Oct 2019 Contd. in sched/core.c */
-
 	/*
 	 * KVM uses this interrupt to force a cpu out of guest mode
 	 */
@@ -319,34 +298,16 @@ static inline void __smp_call_function_interrupt(void)
 void smp_call_function_interrupt(struct pt_regs *regs)
 {
 	smp_entering_irq();
-
-	/*Nirjhar Mukherjee 26 Oct 2019 */
-	kutrace1(KUTRACE_IRQ + CALL_FUNCTION_VECTOR, 0);
-
 	__smp_call_function_interrupt();
-	
-	/*Nirjhar Mukherjee 26 Oct 2019 */	
-	kutrace1(KUTRACE_IRQRET + CALL_FUNCTION_VECTOR, 0);
-
 	exiting_irq();
 }
 
 void smp_trace_call_function_interrupt(struct pt_regs *regs)
 {
 	smp_entering_irq();
-
-	/*Nirjhar Mukherjee 26 Oct 2019 */
-	kutrace1(KUTRACE_IRQ + CALL_FUNCTION_VECTOR, 0);
-
-
 	trace_call_function_entry(CALL_FUNCTION_VECTOR);
 	__smp_call_function_interrupt();
 	trace_call_function_exit(CALL_FUNCTION_VECTOR);
-
-	/*Nirjhar Mukherjee 26 Oct 2019 */	
-	kutrace1(KUTRACE_IRQRET + CALL_FUNCTION_VECTOR, 0);
-
-
 	exiting_irq();
 }
 
@@ -358,34 +319,17 @@ static inline void __smp_call_function_single_interrupt(void)
 
 void smp_call_function_single_interrupt(struct pt_regs *regs)
 {
-	smp_entering_irq();	
-
-	/*Nirjhar Mukherjee 26 Oct 2019 */	
-	kutrace1(KUTRACE_IRQ + CALL_FUNCTION_SINGLE_VECTOR, 0);
-
-
+	smp_entering_irq();
 	__smp_call_function_single_interrupt();
-
-	/*Nirjhar Mukherjee 26 Oct 2019 */	
-	kutrace1(KUTRACE_IRQRET + CALL_FUNCTION_SINGLE_VECTOR, 0);
-
 	exiting_irq();
 }
 
 void smp_trace_call_function_single_interrupt(struct pt_regs *regs)
 {
 	smp_entering_irq();
-
-	/*Nirjhar Mukherjee 26 Oct 2019 */	
-	kutrace1(KUTRACE_IRQ + CALL_FUNCTION_SINGLE_VECTOR, 0);
-
 	trace_call_function_single_entry(CALL_FUNCTION_SINGLE_VECTOR);
 	__smp_call_function_single_interrupt();
 	trace_call_function_single_exit(CALL_FUNCTION_SINGLE_VECTOR);
-
-	/*Nirjhar Mukherjee 26 Oct 2019 */	
-	kutrace1(KUTRACE_IRQRET + CALL_FUNCTION_SINGLE_VECTOR, 0);
-
 	exiting_irq();
 }
 
